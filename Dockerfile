@@ -3,6 +3,9 @@ FROM python:3-slim-buster
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+RUN apt update
+RUN apt install -y libpq-dev gcc
+
 WORKDIR /magic_linker
 COPY requirements.txt .
 RUN pip install -r requirements.txt
