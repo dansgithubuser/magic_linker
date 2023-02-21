@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    container_name: magic_linker-db
+    env_file: env-db
+    restart: always
+    logging:
+      options:
+        max-file: 3
+        max-size: 10m
+  main:
+    image: magic_linker:latest
+    container_name: magic_linker-main
+    env_file: env
+    logging:
+      options:
+        max-file: 3
+        max-size: 10m
+    ports:
+      - 8000:8000
+    restart: always
