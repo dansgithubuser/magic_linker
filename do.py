@@ -151,7 +151,7 @@ if hasattr(args, 'manage'):
     invoke('./manage.py', *args.manage)
 
 if args.run:
-    invoke('./manage.py', 'runserver', '0.0.0.0:8000')
+    invoke('./manage.py', 'runserver', '0.0.0.0:8004')
 
 if args.docker_build:
     git_state()

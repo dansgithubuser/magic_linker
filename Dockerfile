@@ -16,9 +16,9 @@ COPY app ./app
 COPY git-state.txt .
 RUN ./do.py m -- collectstatic --no-input
 
-EXPOSE 8000
+EXPOSE 8004
 
 ENTRYPOINT gunicorn\
 	-w 4\
-	-b 0.0.0.0:8000\
+	-b 0.0.0.0:8004\
 	proj.wsgi:application
