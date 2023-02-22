@@ -8,5 +8,6 @@ import json
 
 @login_required
 def home(request):
-    return render(request, 'home.html')
+    commands = models.Command.objects.filter(permission__user=request.user)
+    return render(request, 'home.html', {'commands': commands})
 home.route = ''

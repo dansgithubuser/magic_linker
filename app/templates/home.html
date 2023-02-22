@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% if user.is_authenticated %}
+  <div>
     Hello, {{ user.get_username }}!
-  {% endif %}
+  </div>
+  {% for command in commands %}
+    <div>
+      {{ command.name }}
+    </div>
+  {% endfor %}
 {% endblock %}
