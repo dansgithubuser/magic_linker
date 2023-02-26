@@ -1,3 +1,5 @@
+from . import sns
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
@@ -7,7 +9,7 @@ import secrets
 import string
 import subprocess
 
-logger = logging.getLogger()
+logger = logging.getLogger('django.server')
 
 class UserInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -24,8 +26,16 @@ class Command(models.Model):
         return self.name
 
     def execute(self, request):
-        Execution.create(request, self.name, self.invocation)
-        # TODO: send email
+        execution = Execution.create(request, self.name, self.invocation)
+        uri = request.build_absolute_uri(f'/execution/{execution.otp}/complete')
+        sns.send(
+            request.user.userinfo.sns_topic_arn,
+            f'Complete execution of command "{self.name}".',
+            f'Linkwizard {request.user.get_username()} has requested execution of command "{self.name}".',
+            f'If you are not {request.user.get_username()}, please ignore this message.',
+            f'Go here to complete execution: {uri}',
+        )
+        return execution
 
 class Permission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
