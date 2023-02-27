@@ -3,6 +3,7 @@
 #===== imports =====#
 import argparse
 import datetime
+from getpass import getpass
 import os
 import re
 import secrets
@@ -27,7 +28,7 @@ parser.add_argument('--run', '-r', action='store_true')
 
 # docker
 parser.add_argument('--docker-build', '--dkrb', action='store_true')
-parser.add_argument('--docker-create-env-files', '--dkre', nargs='+', metavar='<allowed host>')
+parser.add_argument('--docker-create-env-files', '--dkre', action='store_true')
 parser.add_argument('--docker-run', '--dkrr', action='store_true')
 parser.add_argument('--docker-setup-db', '--dkrd', action='store_true')
 
@@ -158,7 +159,9 @@ if args.docker_build:
     invoke('docker build -t magic_linker:latest .')
 
 if args.docker_create_env_files:
-    allowed_hosts = ' '.join(args.docker_create_env_files)
+    allowed_hosts = input('allowed hosts: ')
+    aws_access_key_id = input('AWS access key ID: ')
+    aws_secret_access_key = getpass('AWS secret access key: ')
     secret_key = make_secret()
     db_password = make_secret()
     with open('env', 'w') as f:
@@ -168,6 +171,8 @@ if args.docker_create_env_files:
             f'ALLOWED_HOSTS="{allowed_hosts}"',
             f'DB_PASSWORD={db_password}',
             'DB_HOST=db',
+            'AWS_ACCESS_KEY_ID=.',
+            'AWS_SECRET_ACCESS_KEY=.',
         ]
         for line in lines:
             f.write(line + '\n')

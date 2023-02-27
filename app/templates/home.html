@@ -1,7 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  {% if user.is_authenticated %}
+  <div>
     Hello, {{ user.get_username }}!
-  {% endif %}
+  </div>
+  <div style="display: flex">
+    {% for command in commands %}
+      <form action="command/{{ command.name }}/execute" method="post">
+        <input type="submit" value="{{ command.name }}">
+        {% csrf_token %}
+      </form>
+    {% endfor %}
+  </div>
+  <div>
+    <table>
+      <tr>
+        <th>command</th>
+        <th>created</th>
+        <th>completed</th>
+        <th>result</th>
+      </tr>
+      {% for execution in executions %}
+        <tr>
+          <td>{{ execution.command_name }}</td>
+          <td>{{ execution.created_at }}</td>
+          <td>{{ execution.completed_at }}</td>
+          <td>{{ execution.result }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 {% endblock %}
