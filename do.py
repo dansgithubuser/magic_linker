@@ -171,8 +171,8 @@ if args.docker_create_env_files:
             f'ALLOWED_HOSTS="{allowed_hosts}"',
             f'DB_PASSWORD={db_password}',
             'DB_HOST=db',
-            'AWS_ACCESS_KEY_ID=.',
-            'AWS_SECRET_ACCESS_KEY=.',
+            'AWS_ACCESS_KEY_ID={aws_acces_key_id}',
+            'AWS_SECRET_ACCESS_KEY="{aws_secret_access_key}"',
         ]
         for line in lines:
             f.write(line + '\n')
