@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 import logging
+import re
 import secrets
 import string
 import subprocess
@@ -28,6 +29,7 @@ class Command(models.Model):
     def execute(self, request):
         execution = Execution.create(request, self.name, self.invocation)
         uri = request.build_absolute_uri(f'/execution/{execution.otp}/complete')
+        uri = re.sub('^http:', 'https:', uri)
         sns.send(
             request.user.userinfo.sns_topic_arn,
             f'Complete execution of command "{self.name}".',
