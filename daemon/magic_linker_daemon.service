@@ -1,0 +1,11 @@
+[Unit]
+Description=Magic Linker Daemon
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=60
+ExecStart={python3} -u {daemon}
+
+[Install]
+WantedBy=multi-user.target

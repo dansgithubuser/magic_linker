@@ -7,6 +7,7 @@ from getpass import getpass
 import os
 import re
 import secrets
+import shutil
 import string
 import subprocess
 import sys
@@ -31,6 +32,9 @@ parser.add_argument('--docker-build', '--dkrb', action='store_true')
 parser.add_argument('--docker-create-env-files', '--dkre', action='store_true')
 parser.add_argument('--docker-run', '--dkrr', action='store_true')
 parser.add_argument('--docker-setup-db', '--dkrd', action='store_true')
+
+# daemon
+parser.add_argument('--daemon-install', '--di', action='store_true')
 
 # env
 parser.add_argument('--env', '-e', choices=['dev', 'prod'], default='dev')
@@ -185,6 +189,7 @@ if args.docker_create_env_files:
 
 if args.docker_run:
     del os.environ['DJANGOGO_ENV']  # wtf docker?
+    os.makedirs('executions', exist_ok=True)
     invoke('docker compose up -d')
 
 if args.docker_setup_db:
@@ -196,3 +201,18 @@ if args.docker_setup_db:
     docker_psql('GRANT ALL PRIVILEGES ON DATABASE magic_linker TO u_magic_linker')
     docker_psql('GRANT ALL ON SCHEMA public TO u_magic_linker', db='magic_linker')
     invoke('docker', 'exec', 'magic_linker-main', './do.py', '--env', 'prod', 'm', 'migrate')
+
+if args.daemon_install:
+    shutil.chown('commands', 'root', 'root')
+    python3 = invoke('which python3', out=True)
+    daemon = os.path.join(DIR, 'daemon')
+    with open('daemon/magic_linker_daemon.service') as f:
+        service = f.read().format(
+            python3=python3,
+            daemon=daemon,
+        )
+    with open('/etc/systemd/system/magic_linker_daemon.service', 'w') as f:
+        f.write(service)
+    invoke('systemctl daemon-reload')
+    invoke('systemctl enable magic_linker_daemon')
+    invoke('systemctl restart magic_linker_daemon')

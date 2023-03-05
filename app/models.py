@@ -8,7 +8,6 @@ import logging
 import re
 import secrets
 import string
-import subprocess
 
 logger = logging.getLogger('django.server')
 
@@ -66,10 +65,9 @@ class Execution(models.Model):
         )
 
     def complete(self):
-        try:
-            self.result = subprocess.run(self.command_invocation.split()).returncode
-        except Exception as e:
-            logger.error(f'Error when completing execution {self.id}: {e}')
+        with open(f'/mnt/executions/execution_{self.id}', 'w') as f:
+            f.write(self.command_invocation)
+        self.result = 0
         self.completed_at = timezone.now()
         self.save()
 
