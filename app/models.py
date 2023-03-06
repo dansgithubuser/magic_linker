@@ -56,9 +56,13 @@ class Execution(models.Model):
     completed_at = models.DateTimeField(null=True)
 
     def create(request, command_name, command_invocation):
+        client_ip = request.META['REMOTE_ADDR']
+        assert re.match(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', client_ip), f"IP doesn't look right: {client_ip}"
         return Execution.objects.create(
             command_name=command_name,
-            command_invocation=command_invocation,
+            command_invocation=command_invocation.format(
+                client_ip=client_ip,
+            ),
             user=request.user,
             user_email=request.user.email,
             otp=''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(32)),
