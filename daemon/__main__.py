@@ -24,5 +24,7 @@ while True:
         with open(execution) as f:
             args = f.read().split()
         if args[0] in COMMANDS:
-            tprint(subprocess.run(['python3', *args], cwd=COMMANDS_DIR))
+            p = subprocess.Popen(['python3', *args], cwd=COMMANDS_DIR)
+            tprint(p, 'pid:', p.pid)
+            tprint(p.wait(), 'pid:', p.pid)
         os.remove(execution)
