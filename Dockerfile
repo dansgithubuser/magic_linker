@@ -19,6 +19,6 @@ RUN ./do.py m -- collectstatic --no-input
 EXPOSE 8004
 
 ENTRYPOINT gunicorn\
-	-w 4\
+	-w 1\
 	-b 0.0.0.0:8004\
 	proj.wsgi:application
