@@ -29,6 +29,7 @@ class Command(models.Model):
         execution = Execution.create(request, self.name, self.invocation)
         uri = request.build_absolute_uri(f'/execution/{execution.otp}/complete')
         uri = re.sub('^http:', 'https:', uri)
+        logger.info(f'Executing command "{self.name}", sending confirmation to user "{request.user.get_username()}".')
         sns.send(
             request.user.userinfo.sns_topic_arn,
             f'Complete execution of command "{self.name}".',
@@ -69,6 +70,7 @@ class Execution(models.Model):
         )
 
     def complete(self):
+        logger.info(f'Completing command "{self.command_name}" for user "{self.user.get_username()}".')
         with open(f'/mnt/executions/execution_{self.id}', 'w') as f:
             f.write(self.command_invocation)
         self.result = 0

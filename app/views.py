@@ -9,6 +9,9 @@ from django.views.decorators.http import require_http_methods
 
 from datetime import timedelta
 import json
+import logging
+
+logger = logging.getLogger('django.server')
 
 def _message(request, message, status):
     return render(
