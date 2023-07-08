@@ -56,7 +56,7 @@ class Execution(models.Model):
     completed_at = models.DateTimeField(null=True)
 
     def create(request, command_name, command_invocation):
-        client_ip = request.META['REMOTE_ADDR']
+        client_ip = request.META.get("HTTP_X_FORWARDED_FOR") or request.META['REMOTE_ADDR']
         assert re.match(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', client_ip), f"IP doesn't look right: {client_ip}"
         return Execution.objects.create(
             command_name=command_name,
